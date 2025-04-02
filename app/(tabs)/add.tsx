@@ -102,6 +102,8 @@ export default function AddProductScreen() {
         onChangeText={(value) => updateFormData('name', value)}
         error={!!errors.name}
         style={styles.input}
+        textColor="black"
+        theme={{ colors: { onSurfaceVariant: '#666' } }}
       />
       {errors.name && <Text style={styles.error}>{errors.name}</Text>}
 
@@ -112,6 +114,8 @@ export default function AddProductScreen() {
         keyboardType="numeric"
         error={!!errors.quantity}
         style={styles.input}
+        textColor="black"
+        theme={{ colors: { onSurfaceVariant: '#666' } }}
       />
       {errors.quantity && <Text style={styles.error}>{errors.quantity}</Text>}
 
@@ -122,6 +126,8 @@ export default function AddProductScreen() {
         keyboardType="decimal-pad"
         error={!!errors.buyingPrice}
         style={styles.input}
+        textColor="black"
+        theme={{ colors: { onSurfaceVariant: '#666' } }}
       />
       {errors.buyingPrice && <Text style={styles.error}>{errors.buyingPrice}</Text>}
 
@@ -132,6 +138,8 @@ export default function AddProductScreen() {
         keyboardType="decimal-pad"
         error={!!errors.sellingPrice}
         style={styles.input}
+        textColor="black"
+        theme={{ colors: { onSurfaceVariant: '#666' } }}
       />
       {errors.sellingPrice && <Text style={styles.error}>{errors.sellingPrice}</Text>}
 
@@ -141,6 +149,8 @@ export default function AddProductScreen() {
         onChangeText={(value) => updateFormData('sku', value)}
         error={!!errors.sku}
         style={styles.input}
+        textColor="black"
+        theme={{ colors: { onSurfaceVariant: '#666' } }}
       />
       {errors.sku && <Text style={styles.error}>{errors.sku}</Text>}
 
@@ -177,7 +187,6 @@ const styles = StyleSheet.create({
   },
   pickImageButton: {
     marginBottom: 16,
-    height: 200,
     justifyContent: 'center',
     borderStyle: 'dashed',
     borderWidth: 2,
@@ -185,6 +194,7 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 8,
     backgroundColor: 'transparent',
+    color: 'black',
   },
   submitButton: {
     marginTop: 16,

@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet, Image } from 'react-native';
-import { ActivityIndicator, Card, Text, Button, Portal, Dialog } from 'react-native-paper';
+import { ActivityIndicator, Card, Text, Button, Portal, Dialog, Menu, IconButton } from 'react-native-paper';
 import { useProductStore } from '../../store/useProductStore';
 import { router } from 'expo-router';
-import { Pencil, Trash2, CircleArrowDown as ArrowDownCircle, CircleArrowUp as ArrowUpCircle } from 'lucide-react-native';
+import { Pencil, Trash2, CircleArrowDown as ArrowDownCircle, CircleArrowUp as ArrowUpCircle, MoveVertical as MoreVertical } from 'lucide-react-native';
 
 export default function ProductListScreen() {
   const { products, loading, loadProducts, deleteProduct } = useProductStore();
   const [deleteDialog, setDeleteDialog] = useState({ visible: false, productId: '' });
+  const [menuVisible, setMenuVisible] = useState<string | null>(null);
 
   useEffect(() => {
     loadProducts();
   }, []);
 
   const showDeleteDialog = (productId: string) => {
+    setMenuVisible(null);
     setDeleteDialog({ visible: true, productId });
   };
 
@@ -24,6 +26,11 @@ export default function ProductListScreen() {
   const handleDelete = async () => {
     await deleteProduct(deleteDialog.productId);
     hideDeleteDialog();
+  };
+
+  const handleEdit = (id: string) => {
+    setMenuVisible(null);
+    router.push(`/product/${id}`);
   };
 
   if (loading) {
@@ -41,9 +48,9 @@ export default function ProductListScreen() {
           <Image source={{ uri: item.imageUri }} style={styles.listImage} />
         )}
         <Card.Content style={styles.listContent}>
-          <Text variant="titleMedium">{item.name}</Text>
-          <Text variant="bodySmall">SKU: {item.sku}</Text>
-          <Text variant="bodySmall">Quantity: {item.quantity}</Text>
+          <Text style={{color:'black',fontWeight:'900'}} variant="titleMedium">{item.name}</Text>
+          <Text style={{color:'black'}} variant="bodySmall">SKU: {item.sku}</Text>
+          <Text style={{color:'black',}} variant="bodySmall">Quantity: {item.quantity}</Text>
           <View style={styles.priceContainer}>
             <View style={styles.priceRow}>
               <ArrowDownCircle size={16} color="#FF6B6B" style={styles.priceIcon} />
@@ -59,22 +66,33 @@ export default function ProductListScreen() {
             </View>
           </View>
         </Card.Content>
-        <Card.Actions style={styles.listActions}>
-          <Button 
-            mode="text" 
-            onPress={() => router.push(`/product/${item.id}`)}
-            icon={({ size, color }) => <Pencil style={{widht:'12px',height:'12px'}} size={size} color={color} />}
-          >
-          </Button>
-          <Button 
-            mode="text" 
-            style={{widht:'12px',height:'32px',display:'block'}}
+        <Menu
+          visible={menuVisible === item.id}
+          onDismiss={() => setMenuVisible(null)}
+          anchor={
+            <IconButton
+              icon={() => <MoreVertical size={20} color="#666" />}
+              onPress={() => setMenuVisible(item.id)}
+              style={styles.menuButton}
+            />
+          }
+          contentStyle={styles.menuContent}
+        >
+          <Menu.Item
+            leadingIcon={() => <Pencil size={20} color="#666" />}
+            onPress={() => handleEdit(item.id)}
+            title="Edit"
+            titleStyle={{ color: '#000' }}
+            style={styles.menuItem}
+          />
+          <Menu.Item
+            leadingIcon={() => <Trash2 size={20} color="#FF6B6B" />}
             onPress={() => showDeleteDialog(item.id)}
-            textColor="red"
-          icon={({ size, color }) => <Trash2 size={size} color={color} />}
-          >
-          </Button>
-        </Card.Actions>
+            title="Delete"
+            titleStyle={{ color: '#FF6B6B' }}
+            style={styles.menuItem}
+          />
+        </Menu>
       </View>
     </Card>
   );
@@ -91,16 +109,16 @@ export default function ProductListScreen() {
       </View>
 
       <Portal>
-        <Dialog visible={deleteDialog.visible} onDismiss={hideDeleteDialog}>
-          <Dialog.Title>Delete Product</Dialog.Title>
+        <Dialog visible={deleteDialog.visible} onDismiss={hideDeleteDialog} style={styles.dialog}>
+          <Dialog.Title style={styles.dialogTitle}>Delete Product</Dialog.Title>
           <Dialog.Content>
-            <Text variant="bodyMedium">
+            <Text variant="bodyMedium" style={styles.dialogContent}>
               Are you sure you want to delete this product? This action cannot be undone.
             </Text>
           </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={hideDeleteDialog}>Cancel</Button>
-            <Button onPress={handleDelete} textColor="red">Delete</Button>
+          <Dialog.Actions style={styles.dialogActions}>
+            <Button onPress={hideDeleteDialog} textColor="#666">Cancel</Button>
+            <Button onPress={handleDelete} textColor="#FF6B6B">Delete</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
@@ -138,12 +156,14 @@ const styles = StyleSheet.create({
   listContent: {
     flex: 1,
   },
-  listActions: {
-    display:'flex',
-    alighItems:'center',
-    justifyContent:'center',
-    width:'20px',
-    flexDirection: 'column',
+  menuButton: {
+    margin: 4,
+  },
+  menuContent: {
+    backgroundColor: '#fff',
+  },
+  menuItem: {
+    backgroundColor: '#fff',
   },
   priceContainer: {
     marginTop: 4,
@@ -161,5 +181,17 @@ const styles = StyleSheet.create({
   },
   sellingPrice: {
     color: '#51CF66',
+  },
+  dialog: {
+    backgroundColor: '#fff',
+  },
+  dialogTitle: {
+    color: '#000',
+  },
+  dialogContent: {
+    color: '#666',
+  },
+  dialogActions: {
+    backgroundColor: '#fff',
   },
 });

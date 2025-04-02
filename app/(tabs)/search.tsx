@@ -36,13 +36,12 @@ export default function SearchScreen() {
             </Text>
           </View>
           <Text variant="bodyMedium" style={styles.priceBuy}>
-         <ArrowDownCircle size={16} color="#FF6B6B" style={styles.priceIcon} />  ${item.buyingPrice} | <Text variant="bodyMedium" style={styles.price}>
-         <ArrowUpCircle size={16} color="#51CF66" style={styles.priceIcon} />  ${item.sellingPrice}
-          </Text></Text>
-         
+            <ArrowDownCircle size={16} color="#FF6B6B" style={styles.priceIcon} /> ${item.buyingPrice} | 
+            <Text variant="bodyMedium" style={styles.price}>
+              <ArrowUpCircle size={16} color="#51CF66" style={styles.priceIcon} /> ${item.sellingPrice}
+            </Text>
+          </Text>
         </View>
-
-       
       </View>
     </Surface>
   );
@@ -54,6 +53,9 @@ export default function SearchScreen() {
         onChangeText={setSearchQuery}
         value={searchQuery}
         style={styles.searchBar}
+        inputStyle={styles.searchInput}
+        iconColor="#666"
+        placeholderTextColor="#999"
         elevation={1}
       />
 
@@ -85,6 +87,11 @@ const styles = StyleSheet.create({
   searchBar: {
     margin: 16,
     borderRadius: 12,
+    backgroundColor: '#fff',
+  },
+  searchInput: {
+    color: '#000',
+    backgroundColor: '#fff',
   },
   list: {
     padding: 16,
@@ -114,7 +121,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontWeight: '900',
-    color:'black'
+    color: 'black',
   },
   infoRow: {
     flexDirection: 'row',
@@ -128,23 +135,19 @@ const styles = StyleSheet.create({
   quantity: {
     color: '#666',
   },
-  priceList:{
-    display:'flex',
+  priceList: {
+    display: 'flex',
   },
   price: {
     fontWeight: '600',
     color: '#007AFF',
-    display:'flex',
-    alignItems:'center',
+    display: 'flex',
+    alignItems: 'center',
   },
   priceBuy: {
     fontWeight: '200',
     color: '#aaa',
-    display:'flex',
-    alignItems:'center',
-  },
-  actions: {
-    flexDirection: 'row',
+    display: 'flex',
     alignItems: 'center',
   },
   separator: {
