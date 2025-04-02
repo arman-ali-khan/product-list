@@ -4,6 +4,7 @@ import { Searchbar, Text, IconButton, Surface, Divider } from 'react-native-pape
 import { useProductStore } from '../../store/useProductStore';
 import { router } from 'expo-router';
 import { CreditCard as Edit2, Trash2 } from 'lucide-react-native';
+import { CircleArrowDown as ArrowDownCircle, CircleArrowUp as ArrowUpCircle } from 'lucide-react-native';
 
 export default function SearchScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,9 +35,11 @@ export default function SearchScreen() {
               Stock: {item.quantity}
             </Text>
           </View>
-          <Text variant="bodyMedium" style={styles.price}>
-            ${item.sellingPrice}
-          </Text>
+          <Text variant="bodyMedium" style={styles.priceBuy}>
+         <ArrowDownCircle size={16} color="#FF6B6B" style={styles.priceIcon} />  ${item.buyingPrice} | <Text variant="bodyMedium" style={styles.price}>
+         <ArrowUpCircle size={16} color="#51CF66" style={styles.priceIcon} />  ${item.sellingPrice}
+          </Text></Text>
+         
         </View>
 
        
@@ -110,7 +113,8 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   name: {
-    fontWeight: '600',
+    fontWeight: '900',
+    color:'black'
   },
   infoRow: {
     flexDirection: 'row',
@@ -124,10 +128,20 @@ const styles = StyleSheet.create({
   quantity: {
     color: '#666',
   },
+  priceList:{
+    display:'flex',
+  },
   price: {
-    marginTop: 4,
     fontWeight: '600',
     color: '#007AFF',
+    display:'flex',
+    alignItems:'center',
+  },
+  priceBuy: {
+    fontWeight: '200',
+    color: '#aaa',
+    display:'flex',
+    alignItems:'center',
   },
   actions: {
     flexDirection: 'row',

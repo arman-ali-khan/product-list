@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet, Image } from 'react-native';
-import { ActivityIndicator, Card, Text, Button, SegmentedButtons, Portal, Dialog } from 'react-native-paper';
+import { ActivityIndicator, Card, Text, Button, Portal, Dialog } from 'react-native-paper';
 import { useProductStore } from '../../store/useProductStore';
 import { router } from 'expo-router';
-import { Grid2x2X as Grid2X2, List } from 'lucide-react-native';
+import { Pencil, Trash2, CircleArrowDown as ArrowDownCircle, CircleArrowUp as ArrowUpCircle } from 'lucide-react-native';
 
 export default function ProductListScreen() {
   const { products, loading, loadProducts, deleteProduct } = useProductStore();
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [deleteDialog, setDeleteDialog] = useState({ visible: false, productId: '' });
 
   useEffect(() => {
@@ -35,24 +34,6 @@ export default function ProductListScreen() {
     );
   }
 
-  const renderGridItem = ({ item }) => (
-    <Card style={styles.gridCard}>
-      {item.imageUri && (
-        <Card.Cover source={{ uri: item.imageUri }} style={styles.gridImage} />
-      )}
-      <Card.Content>
-        <Text variant="titleMedium" numberOfLines={1}>{item.name}</Text>
-        <Text variant="bodySmall">SKU: {item.sku}</Text>
-        <Text variant="bodySmall">Qty: {item.quantity}</Text>
-        <Text variant="bodySmall">${item.sellingPrice}</Text>
-      </Card.Content>
-      <Card.Actions>
-        <Button compact onPress={() => router.push(`/product/${item.id}`)}>Edit</Button>
-        <Button compact onPress={() => showDeleteDialog(item.id)}>Delete</Button>
-      </Card.Actions>
-    </Card>
-  );
-
   const renderListItem = ({ item }) => (
     <Card style={styles.listCard}>
       <View style={styles.listItemContainer}>
@@ -63,12 +44,36 @@ export default function ProductListScreen() {
           <Text variant="titleMedium">{item.name}</Text>
           <Text variant="bodySmall">SKU: {item.sku}</Text>
           <Text variant="bodySmall">Quantity: {item.quantity}</Text>
-          <Text variant="bodySmall">Buying Price: ${item.buyingPrice}</Text>
-          <Text variant="bodySmall">Selling Price: ${item.sellingPrice}</Text>
+          <View style={styles.priceContainer}>
+            <View style={styles.priceRow}>
+              <ArrowDownCircle size={16} color="#FF6B6B" style={styles.priceIcon} />
+              <Text variant="bodySmall" style={styles.buyingPrice}>
+                Buying: ${item.buyingPrice}
+              </Text>
+            </View>
+            <View style={styles.priceRow}>
+              <ArrowUpCircle size={16} color="#51CF66" style={styles.priceIcon} />
+              <Text variant="bodySmall" style={styles.sellingPrice}>
+                Selling: ${item.sellingPrice}
+              </Text>
+            </View>
+          </View>
         </Card.Content>
         <Card.Actions style={styles.listActions}>
-          <Button onPress={() => router.push(`/product/${item.id}`)}>Edit</Button>
-          <Button onPress={() => showDeleteDialog(item.id)}>Delete</Button>
+          <Button 
+            mode="text" 
+            onPress={() => router.push(`/product/${item.id}`)}
+            icon={({ size, color }) => <Pencil style={{widht:'12px',height:'12px'}} size={size} color={color} />}
+          >
+          </Button>
+          <Button 
+            mode="text" 
+            style={{widht:'12px',height:'32px',display:'block'}}
+            onPress={() => showDeleteDialog(item.id)}
+            textColor="red"
+          icon={({ size, color }) => <Trash2 size={size} color={color} />}
+          >
+          </Button>
         </Card.Actions>
       </View>
     </Card>
@@ -77,30 +82,10 @@ export default function ProductListScreen() {
   return (
     <>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <SegmentedButtons
-            value={viewMode}
-            onValueChange={value => setViewMode(value as 'grid' | 'list')}
-            buttons={[
-              {
-                value: 'grid',
-                icon: ({ size, color }) => <Grid2X2 size={size} color={color} />,
-                label: 'Grid',
-              },
-              {
-                value: 'list',
-                icon: ({ size, color }) => <List size={size} color={color} />,
-                label: 'List',
-              },
-            ]}
-          />
-        </View>
         <FlatList
           data={products}
           keyExtractor={(item) => item.id}
-          renderItem={viewMode === 'grid' ? renderGridItem : renderListItem}
-          numColumns={viewMode === 'grid' ? 2 : 1}
-          key={viewMode}
+          renderItem={renderListItem}
           contentContainerStyle={styles.list}
         />
       </View>
@@ -133,25 +118,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  header: {
-    padding: 16,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
   list: {
     padding: 8,
   },
-  gridCard: {
-    flex: 1,
-    margin: 8,
-    maxWidth: '47%',
-  },
-  gridImage: {
-    height: 120,
-  },
   listCard: {
     margin: 8,
+    backgroundColor: '#fff',
   },
   listItemContainer: {
     flexDirection: 'row',
@@ -167,6 +139,27 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listActions: {
+    display:'flex',
+    alighItems:'center',
+    justifyContent:'center',
+    width:'20px',
     flexDirection: 'column',
+  },
+  priceContainer: {
+    marginTop: 4,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 2,
+  },
+  priceIcon: {
+    marginRight: 4,
+  },
+  buyingPrice: {
+    color: '#FF6B6B',
+  },
+  sellingPrice: {
+    color: '#51CF66',
   },
 });

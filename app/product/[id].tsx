@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { TextInput, Button, Text } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Image } from 'react-native';
+import { TextInput, Button, Text, Surface } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { useProductStore } from '../../store/useProductStore';
 import { useLocalSearchParams, router } from 'expo-router';
+import { Camera, ImagePlus } from 'lucide-react-native';
 
 export default function EditProductScreen() {
   const { id } = useLocalSearchParams();
   const { products, updateProduct } = useProductStore();
   const product = products.find(p => p.id === id);
 
-  const [name, setName] = useState(product?.name || '');
-  const [quantity, setQuantity] = useState(product?.quantity.toString() || '');
-  const [buyingPrice, setBuyingPrice] = useState(product?.buyingPrice.toString() || '');
-  const [sellingPrice, setSellingPrice] = useState(product?.sellingPrice.toString() || '');
-  const [sku, setSku] = useState(product?.sku || '');
-  const [imageUri, setImageUri] = useState(product?.imageUri || '');
+  const [name, setName] = useState(product?.name ?? '');
+  const [quantity, setQuantity] = useState(product?.quantity?.toString() ?? '');
+  const [buyingPrice, setBuyingPrice] = useState(product?.buyingPrice?.toString() ?? '');
+  const [sellingPrice, setSellingPrice] = useState(product?.sellingPrice?.toString() ?? '');
+  const [sku, setSku] = useState(product?.sku ?? '');
+  const [imageUri, setImageUri] = useState(product?.imageUri ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -70,6 +71,29 @@ export default function EditProductScreen() {
 
   return (
     <ScrollView style={styles.container}>
+      {imageUri ? (
+        <Surface style={styles.imagePreviewContainer}>
+          <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+          <Button 
+            mode="contained" 
+            onPress={pickImage} 
+            style={styles.changeImageButton}
+            icon={({ size, color }) => <Camera size={size} color={color} />}
+          >
+            Change Image
+          </Button>
+        </Surface>
+      ) : (
+        <Button 
+          mode="outlined" 
+          onPress={pickImage} 
+          style={styles.pickImageButton}
+          icon={({ size, color }) => <ImagePlus size={size} color={color} />}
+        >
+          Add Product Image
+        </Button>
+      )}
+
       <TextInput
         label="Product Name"
         value={name}
@@ -118,11 +142,11 @@ export default function EditProductScreen() {
       />
       {errors.sku && <Text style={styles.error}>{errors.sku}</Text>}
 
-      <Button mode="contained" onPress={pickImage} style={styles.button}>
-        Change image
-      </Button>
-
-      <Button mode="contained" onPress={handleSubmit} style={styles.button}>
+      <Button 
+        mode="contained" 
+        onPress={handleSubmit} 
+        style={styles.submitButton}
+      >
         Update Product
       </Button>
     </ScrollView>
@@ -135,14 +159,38 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
+  imagePreviewContainer: {
+    marginBottom: 16,
+    borderRadius: 8,
+    overflow: 'hidden',
+    elevation: 2,
+  },
+  imagePreview: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'cover',
+  },
+  changeImageButton: {
+    margin: 8,
+  },
+  pickImageButton: {
+    marginBottom: 16,
+    height: 200,
+    justifyContent: 'center',
+    borderStyle: 'dashed',
+    borderWidth: 2,
+  },
   input: {
     marginBottom: 8,
+    backgroundColor: 'transparent',
   },
-  button: {
+  submitButton: {
     marginTop: 16,
+    marginBottom: 32,
   },
   error: {
     color: 'red',
     marginBottom: 8,
+    fontSize: 12,
   },
 });
